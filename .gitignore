@@ -1,0 +1,9 @@
+# PDFs y binarios
+*.pdf
+
+# Datos operativos del ciclo (no versionar — crecen cada noche)
+proyectos/*/_durable/log_hypotheses.jsonl
+proyectos/*/_durable/coverage_matrix.yaml
+
+# Sistema operativo
+.DS_Store

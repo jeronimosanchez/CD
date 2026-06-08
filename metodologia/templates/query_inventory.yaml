@@ -1,0 +1,49 @@
+# Query Inventory — [Nombre proyecto]
+# Para usar: lista todos los queries esperados con frecuencia + complejidad
+
+proyecto: ""
+fecha: ""
+version: 0.1
+
+queries:
+  - id: q001
+    user_input_ejemplo: ""           # ej: "¿Cuál es vuestro horario?"
+    categoria_negocio: ""            # ej: "información general"
+    frecuencia: ""                   # Alta / Media / Baja
+    complejidad: ""                  # Determinística / Variable / Creativa
+    capa_propuesta: ""               # NLU / NLU+lookup / LLM Task / LLM creative
+    razon_breve: ""
+
+  - id: q002
+    user_input_ejemplo: ""
+    categoria_negocio: ""
+    frecuencia: ""
+    complejidad: ""
+    capa_propuesta: ""
+    razon_breve: ""
+
+  # añadir tantos queries como necesarios (recomendado: 50-100 para versión rigurosa, 20+ para versión ligera)
+
+# ───────────────────────────────────────────────────
+# Resumen agregado (calcular tras llenar inventario)
+# ───────────────────────────────────────────────────
+
+distribucion_estimada:
+  porcentaje_NLU: 0
+  porcentaje_NLU_lookup: 0
+  porcentaje_LLM_task: 0
+  porcentaje_LLM_creative: 0
+
+clusters_detectados:
+  # agrupa queries similares para identificar patterns
+  - cluster: ""
+    queries_id: []
+    capa_asignada: ""
+
+decisiones_pendientes:
+  # queries que requieren más info del cliente
+  - query_id: ""
+    pregunta_para_cliente: ""
+
+notas:
+  # comentarios libres durante el inventario
