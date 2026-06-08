@@ -7,3 +7,6 @@ proyectos/*/_durable/coverage_matrix.yaml
 
 # Sistema operativo
 .DS_Store
+
+automatizacion/res/
+proyectos/petal/petal-sheet-api/

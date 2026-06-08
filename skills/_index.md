@@ -32,18 +32,20 @@ Cuando el sistema QAP madure y tenga repo propio, migrarán a `~/CD/skills/`.
 
 ### Fase 1 — Motor (E3)
 
-| Skill | Función | Línea | Estado |
-|---|---|---|---|
-| **qap_sys_plan_generator** | Paso 1 del ciclo autónomo — decide qué testear cada noche: lee historial, FAILs y cobertura, produce coverage_plan.yaml | QAP | 🔴 |
-| **gen_ag_adversarial** | Genera conversaciones difíciles para romper cualquier agente — Qwen local, $0 | GEN | 🔴 |
-| **qap_ag_cluster_analyzer** | Agrupa FAILs por similitud semántica usando embeddings locales → patrones con ROI, $0 | QAP | 🔴 |
-| **qap_plat_cx_playbook_expert** | Experto comité capa comportamiento — lee YAML de CX, identifica instrucción causante con cita exacta, crea kb_proj_petal_playbook | QAP | 🔴 |
-| **inventory-expert** | Analiza desde la perspectiva del catálogo/Sheet | QAP | 🔴 |
-| **git-expert** | Analiza desde el historial git — ¿ya se intentó? ¿se revirtió? | QAP | 🔴 |
-| **qap_ag_hypothesis_generator** | Sintetiza informes de N expertos del comité en 3-5 hipótesis accionables con predicción de mejora % — comité extensible, no repite hipótesis ya intentadas, carga kb_plat para generar soluciones factibles en la plataforma del cliente | QAP | 🔴 |
-| **gen_plat_cx_hypothesis_fixer** | Genera diff YAML de CX listo para desplegar a partir de la hipótesis — Gemini Flash free (formato nativo CX) | GEN | 🔴 |
-| **hypothesis-validator** | Prueba el fix en ADK (antes/después) + staging golden set | QAP | 🔴 |
-| **juez-llm** | Evalúa output real del agente contra rúbricas — veredicto con evidencia | QAP | 🔴 |
+| Paso | Skill | Función | Línea | Tipo | Modelo | Estado |
+|---|---|---|---|---|---|---|
+| 1 | **qap_sys_plan_generator** | Decide qué testear cada noche — historial + FAILs + cobertura → coverage_plan.yaml | QAP | Skill | Claude API | 🔴 |
+| 2 | **gen_ag_adversarial** | Genera conversaciones difíciles para romper cualquier agente | GEN | Skill | Qwen 32B local ($0) | 🔴 |
+| 3 | ADK runner | Ejecuta conversaciones contra el agente — devuelve PASS/FAIL | — | **Infra** | — | 🔴 |
+| 5 | **qap_ag_cluster_analyzer** | Agrupa FAILs por similitud semántica → patrones con ROI | QAP | Skill | Embeddings local ($0) | 🔴 |
+| 6 | **qap_plat_cx_playbook_expert** | Experto comité capa comportamiento — identifica instrucción causante con cita exacta | QAP | Skill | Gemini Flash free | 🔴 |
+| 6 | **qap_proj_petal_inventory_expert** | Experto comité capa inventario — analiza tool calls y Sheet de Petal | QAP | Skill | Gemini Flash free | 🔴 |
+| 6 | **qap_ag_git_expert** | Experto comité historial git — ¿ya se intentó? ¿se revirtió? | QAP | Skill | Claude API | 🔴 |
+| 7 | **qap_ag_hypothesis_generator** | Sintetiza informes del comité en 3-5 hipótesis con predicción % — extensible, no repite intentos fallidos | QAP | Skill | Claude API | 🔴 |
+| 8 | **gen_plat_cx_hypothesis_fixer** | Genera cambio puntual (sección + contenido nuevo) — NO el playbook completo | GEN | Skill | Gemini Flash free | 🔴 |
+| 9 | hypothesis-validator | Testa el fix: Fase A ADK + Fase B staging CX (entornos efímeros por hipótesis) | — | **Infra** | — | 🔴 |
+| 10 | **qap_ag_juez** | Evalúa respuesta real vs rúbrica — veredicto por criterio (sí/no/parcial) con evidencia | QAP | Skill | Claude API | 🔴 |
+| 10 | scorer | Agrega veredictos del juez → PASS / PARTIAL / FAIL + % numérico | — | **Infra** | — | 🔴 |
 
 ### Fase 1 — QA heredado de ACT (en repo cx-automation-template)
 
