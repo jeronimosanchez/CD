@@ -3,7 +3,7 @@
 > ⮕ EMPIEZA AQUÍ para saber qué skills existen y cuál necesitas.
 > Simétrico a ~/CD/kb/_index.md — mismo gobierno, misma lógica.
 > Para añadir una skill, editar solo este archivo.
-> Última actualización: 2026-06-07
+> Última actualización: 2026-06-10
 
 ---
 
@@ -54,6 +54,28 @@ Cuando el sistema QAP madure y tenga repo propio, migrarán a `~/CD/skills/`.
 | **qa-tc-analyzer** | `~/cx-automation-template/.claude/skills/qa-tc-analyzer/` | Analiza FAILs con 9 capas de causa raíz | 🟡 |
 | **qa-fix** | `~/cx-automation-template/.claude/skills/qa-fix/` | Aplica fix → PR → deploy → valida | 🟡 |
 | **qa-revert** | `~/cx-automation-template/.claude/skills/qa-revert/` | Revierte el último fix para demo/test | 🟡 |
+
+### GEN — Motor de generación de playbooks
+
+| Paso | Skill | Función | Línea | Tipo | Modelo | Estado |
+|---|---|---|---|---|---|---|
+| 1 | **gen_context_loader** | Lee el brief → identifica y carga KBs relevantes → contexto estructurado para el generador | GEN | Skill | Sonnet 4.6 | 🔴 |
+| 2 | **gen_ag_generator** | Genera 5 variantes completas del playbook con enfoques distintos | GEN | Skill | Qwen 32B local ($0) | 🔴 |
+| 3 | **gen_ag_reviewer** | Evalúa las 5 variantes contra criterios KB → descarta 2 → top 3 rankeadas | GEN | Skill | Sonnet 4.6 | 🔴 |
+| 4 | **gen_ag_adversarial** | Stress test: intenta romper cada candidata con conversaciones difíciles | GEN | Skill | Qwen 32B local ($0) | 🔴 |
+| 5 | **gen_plat_cx_hypothesis_fixer** | Fix puntual sobre playbook existente (usado en Sistema A, paso 8) | GEN | Skill | Gemini Flash free | 🔴 |
+
+> Trigger: bajo demanda (no cron). Las top 3 del reviewer pasan a QAP (Sistema A) para validación final antes del gate humano.
+
+### Sistema B — Bucle de conocimiento (E14)
+
+| Paso | Skill | Función | Línea | Tipo | Modelo | Estado |
+|---|---|---|---|---|---|---|
+| 1 | **sys_b_extractor** | Lee logs de Sistema A → registros de experimento estructurados (✅/❌/⚠️) | Sistema B | Skill | Sonnet 4.6 | 🔴 |
+| 2 | **sys_b_classifier** | Aplica 3 tests → asigna nivel KB (proyecto/servicio/universal/plataforma) + confianza | Sistema B | Skill | Opus 4.8 | 🔴 |
+| 3 | **sys_b_writer** | Detecta conflictos/duplicados → genera borrador → gate humano → escribe KB | Sistema B | Skill | Sonnet 4.6 | 🔴 |
+
+> Cadencia: cada 7 ciclos de Sistema A (síntesis estándar) o inmediato (contradicción detectada).
 
 ### Fase 2 — Profundidad (E7)
 
