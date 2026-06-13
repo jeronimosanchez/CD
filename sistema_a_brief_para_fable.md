@@ -1,6 +1,10 @@
 # Briefing completo — Sistema A (motor autónomo de optimización conversacional)
 ## Para revisión crítica por un modelo externo (Fable 5)
 
+> **Versión 10-jun-2026 · Actualizado 12-jun-2026** (ver **§7.5** + preguntas 6-8): se ha empezado a
+> construir y medir el prerequisito ADK, pero su **fidelidad SIGUE EN TEST, sin concluir** — los números
+> de fidelidad de este documento son PROVISIONALES y están contaminados (fuga de andamiaje, ~22% INVALID).
+
 > **Instrucción para el evaluador:** lee todo el documento — es largo a propósito,
 > porque quiero una valoración con los detalles reales, no sobre una abstracción.
 > Al final hay 5 preguntas concretas y una petición de cierre. No valides la idea
@@ -87,7 +91,9 @@ out-of-pocket $0.)
 **Prerequisito crítico, aún NO resuelto:** el ADK runner debe tener fidelidad
 > 85% (tool_trajectory_avg_score) respecto al CX real. Si el simulador local no
 predice el comportamiento de producción, todo el filtrado barato es ruido y el
-sistema no sirve. Esto es lo primero que hay que construir y validar.
+sistema no sirve. Esto es lo primero que hay que construir y validar. **(ACTUALIZACIÓN 12-jun: se ha
+EMPEZADO a construir y medir — ver §7.5. Sigue SIN concluir: el número actual está contaminado por fuga
+de andamiaje, ~22% INVALID. La fidelidad de ADK aún NO está establecida.)**
 
 ---
 
@@ -249,6 +255,58 @@ contradicción con conocimiento existente.
 
 ---
 
+## 7.5 ACTUALIZACIÓN 12-jun-2026 — El prerequisito ADK está EN TEST (sin concluir)
+
+> Desde el 10-jun se ha EMPEZADO a construir y MEDIR el prerequisito crítico (fidelidad del runner ADK).
+> **AÚN NO ESTÁ RESUELTO.** Los números de abajo son PROVISIONALES y el instrumento se está endureciendo
+> ahora mismo. Se incluye porque cambia cómo leer la pregunta 1 (sigue siendo el cuello de botella).
+
+**Qué se construyó.** Reconstrucción de Petal en ADK, arquitectura MULTI-AGENTE (orquestador → sub-agentes,
+cada uno con SOLO su playbook) corriendo Qwen2.5-14B-q4 vía Ollama, webhook real, rúbrica regex. Mide
+acuerdo vs CX sobre 51 TCs.
+
+**Qué se midió (PROVISIONAL — no fiarse del número todavía):** acuerdo bruto ~82-88%, sesgo PESIMISTA
+limpio (0 falsos negativos en ambas corridas — nunca traga un fallo real). PERO el número está
+CONTAMINADO en las dos direcciones → todavía NO es fidelidad real.
+
+**El hallazgo que invalida el número.** La reconstrucción FUGA andamiaje interno al output
+(`$var`, `${PLAYBOOK:...}`, `PASO N`, `sourceMapping`, JSON de routing) — vocabulario que está
+LITERALMENTE en los prompts: son directivas que el MOTOR de CX ejecuta y un LLM pelado lee como texto y
+vomita. La rúbrica regex a veces PREMIA esa fuga (matchea keywords por casualidad → PASS falso) y a veces
+penaliza respuestas limpias (FAIL falso). Medido: **~22% de turnos INVALID** (fuga). Con eso, el 82/88
+mide en parte basura. → Es el **TERCER auto-envenenamiento del instrumento** (ground truth caduco →
+truncación de contexto → fuga+regex). El patrón ya es tesis del método: **el harness se audita ANTES de
+creerle un solo número.**
+
+**Reproducibilidad (esto sí resuelto).** Misma config en dos hardware (Mac Metal vs Kaggle CUDA-P100):
+82% vs 88%, discrepan en 9/51 TCs. Digest del modelo IDÉNTICO → drift DESCARTADO; la divergencia es
+coma-flotante no asociativa entre backends = FÍSICA, no bug. Decisión: entorno canónico = Mac;
+cross-hardware se abandona; baseline POR hardware (fingerprint con hardware+backend+versión).
+
+**Plan de endurecimiento EN CURSO (no terminado, y en pausa hasta que cierre la pata de velocidad):**
+1. Veredicto de 3 estados PASS/FAIL/**INVALID** (fuga/degeneración/tool-error/timeout → INVALID, NO FAIL;
+   su % = salud del harness; >5-10% → run no vale). [parcial: ya midió el 22%]
+2. Sanear las directivas de CX en los prompts (traducir `${PLAYBOOK}`/`PASO N` a lenguaje natural o
+   constructos ADK reales — el LLM no puede fugar lo que no ve). [PENDIENTE — cambio significativo, re-baselinea]
+3. Routing como tool-call (separado del canal de texto), no como texto.
+4. Lexicón anti-fuga AUTOGENERADO desde el prompt compilado (pre-gate de validez, cero mantenimiento, agnóstico).
+5. Auto-reproducibilidad ×2 en Mac (mismo run debe dar 100%) → baseline limpio v3 SOLO cuando 1-4 estén.
+
+**Método de validación del INSTRUMENTO que emerge (agnóstico, es IP):** mutation testing (inyectar defectos
+conocidos en copias de playbooks → tasa de detección = métrica reina; NO necesita TCs nuevos) · holdout
+(casos que el optimizador nunca ve, anti-overfitting) · recall@k (el sesgo pesimista es el lado seguro) ·
+tasa INVALID = salud del harness. Dos capas de veredicto: binario (contrato comparable con CX) + score
+0-1 (orden interno de candidatos, nunca claim de calidad).
+
+**Aprendizaje ADK capturado (kb_plat_adk, ADK-29):** distinguir lenguaje natural (pasa tal cual) de
+directivas ejecutables del motor de CX (se traducen) — un LLM local no tiene el motor que las ejecuta.
+
+**Estado honesto: la fidelidad de ADK NO está establecida.** No hay aún un número de fidelidad de fiar.
+El cribador se ganará el puesto POR CLASE de TC vía gates mecánicos (INVALID<10%, falsas alarmas≤10-15%,
+mutación≥80%, wall-clock < staging CX) con timebox; las clases que no pasen → CX directo (regla del embudo).
+
+---
+
 ## 8. Preguntas concretas para el evaluador
 
 1. **Fidelidad ADK (el cuello de botella):** todo el ahorro de coste depende de que
@@ -282,6 +340,21 @@ contradicción con conocimiento existente.
    ¿no acabo sobreajustando el agente a esos TCs y degradando su comportamiento en
    conversaciones reales no cubiertas? ¿Cómo equilibro reproducibilidad (corpus fijo)
    con generalización? ¿Necesito un holdout de TCs que el optimizador nunca ve?
+
+6. **Veredicto de 3 estados (ver §7.5):** ¿es correcto tratar la fuga de andamiaje como **INVALID**
+   (muestra inválida, fuera del acuerdo y del ranking) en vez de FAIL? Razón: contarla como FAIL infla
+   las falsas alarmas y entierra fixes buenos por ruido del harness. ¿El umbral de salud (INVALID <5-10%)
+   es razonable? ¿Qué categorías de INVALID falta contemplar?
+
+7. **Sanear vs reconstruir fiel (ver §7.5):** la fuga viene de inlinear directivas EJECUTABLES de CX
+   (`${PLAYBOOK}`, `PASO N`) como texto. ¿Traducirlas a lenguaje natural basta, o el arreglo correcto es
+   modelar el routing/estado como constructos REALES de ADK (transfer, state)? ¿Dónde está el punto de
+   retorno decreciente entre "barato (sanear)" y "fiel (machinery ADK)"?
+
+8. **Cross-hardware abandonado (ver §7.5):** mismo modelo/digest, distinto backend (Metal vs CUDA) →
+   82% vs 88%, 9 TCs voltean. ¿Es correcto declarar la reproducibilidad cross-hardware imposible (física)
+   y pinear UNA máquina canónica, o hay una normalización que se nos escapa? ¿Los 9 TCs que voltean son
+   un "set de fragilidad" útil (candidatos a TCs discriminantes) o ruido a descartar?
 
 **Cierre obligatorio:** por cada pregunta, dame tu veredicto + el fallo más grave
 que veas + 1-2 alternativas concretas. Y al final, nombra los **3 supuestos del
