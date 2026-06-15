@@ -27,32 +27,40 @@ un **hub de conocimiento y método (CD)** que actúa como cerebro y fuente únic
 
 ## 2. Mapa de conjunto
 
+![Mapa del sistema de Automatización CD](sistema.svg)
+
+<details>
+<summary>Fuente editable (Mermaid)</summary>
+
 ```mermaid
 graph TD
     CD["CD — Hub de conocimiento<br/>kb · método · skills"]
-    GEN["GEN — Generación<br/>standalone o → QAP · ROADMAP"]
-    QAP["QAP — Validación + análisis<br/>repo: agent-validation-engine · OPERATIVO"]
-    ACT["ACT — Despliegue<br/>repo: cx-automation-template · OPERATIVO"]
+    GEN["GEN — Generación · ROADMAP"]
+    QAP["QAP — Validación + análisis · OPERATIVO"]
+    ACT["ACT — Despliegue · OPERATIVO"]
     RES["RES — Investigación · ROADMAP"]
-    PLAT[("Plataforma · Dialogflow CX (sello final)")]
+    PLAT[("Plataforma · Dialogflow CX")]
 
     CD -. método/kb .-> GEN
     CD -. kb .-> QAP
-
     GEN <-->|genera ↔ dirige| QAP
     QAP -->|aprobados| ACT
-    ACT -->|despliega| PLAT
     QAP -->|valida| PLAT
+    ACT -->|despliega| PLAT
     QAP -->|outcomes| CD
     RES -->|alimenta kb| CD
 
-    classDef op fill:#1D9E75,stroke:#0F6E56,color:#fff
-    classDef rm fill:#E5E7EB,stroke:#9CA3AF,color:#374151
-    classDef hub fill:#7F77DD,stroke:#534AB7,color:#fff
+    classDef op fill:#15795a,stroke:#0f5e46,color:#ffffff
+    classDef rm fill:#363b42,stroke:#4b5563,color:#e5e7eb
+    classDef hub fill:#5b51c2,stroke:#473fa0,color:#ffffff
+    classDef plat fill:#7c4a12,stroke:#5c3608,color:#fde68a
     class QAP,ACT op
     class GEN,RES rm
     class CD hub
+    class PLAT plat
 ```
+
+</details>
 
 Vista lineal del ciclo de vida de un agente (las 5 fases con las que se alinea el sistema):
 
