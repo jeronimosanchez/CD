@@ -1,0 +1,206 @@
+# SISTEMA — Visión y mapa de arquitectura
+
+> **Documento de visión del sistema de Automatización CD (Conversational Design).**
+> Estado: BORRADOR · Fecha: 2026-06-15 · Autor: Jerónimo Sánchez
+>
+> Audiencia: un evaluador técnico (empleador) que revisa este trabajo como portfolio.
+> Objetivo: dar una vista de conjunto honesta — qué está **construido y operativo** hoy
+> y qué es **roadmap** — sin inflar el alcance.
+
+---
+
+## 1. Qué es este sistema
+
+Un sistema para **diseñar, desplegar y validar agentes conversacionales** de calidad
+production-grade, de forma automatizada y **agnóstica de plataforma**.
+
+El caso piloto es **Petal**, un agente de comercio de flores en español construido sobre
+Dialogflow CX, tratado como una simulación profesional (estructura, procesos y calidad de
+un proyecto real en producción). El sistema, sin embargo, está diseñado para no depender de
+Petal ni de CX: el método y el motor son los mismos para CX, Lex, Voiceflow o un agente custom;
+lo que cambia por cliente y plataforma es un *adapter*, no el núcleo.
+
+El sistema se organiza en **4 líneas operativas** (ACT, GEN, QAP, RES) coordinadas alrededor de
+un **hub de conocimiento y método (CD)** que actúa como cerebro y fuente única de verdad.
+
+---
+
+## 2. Mapa de conjunto
+
+```mermaid
+graph TD
+    CD["CD — Hub de conocimiento<br/>kb · método · skills"]
+    GEN["GEN — Generación<br/>standalone o → QAP · ROADMAP"]
+    QAP["QAP — Validación + análisis<br/>repo: agent-validation-engine · OPERATIVO"]
+    ACT["ACT — Despliegue<br/>repo: cx-automation-template · OPERATIVO"]
+    RES["RES — Investigación · ROADMAP"]
+    PLAT[("Plataforma · Dialogflow CX (sello final)")]
+
+    CD -. método/kb .-> GEN
+    CD -. kb .-> QAP
+
+    GEN <-->|genera ↔ dirige| QAP
+    QAP -->|aprobados| ACT
+    ACT -->|despliega| PLAT
+    QAP -->|valida| PLAT
+    QAP -->|outcomes| CD
+    RES -->|alimenta kb| CD
+
+    classDef op fill:#1D9E75,stroke:#0F6E56,color:#fff
+    classDef rm fill:#E5E7EB,stroke:#9CA3AF,color:#374151
+    classDef hub fill:#7F77DD,stroke:#534AB7,color:#fff
+    class QAP,ACT op
+    class GEN,RES rm
+    class CD hub
+```
+
+Vista lineal del ciclo de vida de un agente (las 5 fases con las que se alinea el sistema):
+
+```
+DESIGN  →  BUILD        →  VALIDATE  →  ITERATE        →  STRATEGIC
+(CD)       (GEN + ACT)     (QAP)        (outcomes→CD/kb)   (RES)
+```
+
+---
+
+## 3. Las 4 líneas + CD
+
+### CD — Hub de conocimiento y método  ·  ESTADO: existe (en construcción activa)
+
+El "cerebro" del sistema. No despliega ni valida nada por sí mismo: **gobierna el conocimiento,
+el método y las skills** que el resto de líneas consumen.
+
+Contenido real (carpeta `~/CD/`):
+
+- **`kb/`** — la *knowledge base*, fuente única de verdad. Organizada en 4 capas con nomenclatura
+  propia y gobierno (`_index.md`, `_politica_kb.md`, `_nomenclatura_kbs.md`):
+  - `kb_ag_*` — agnóstico (principios de diseño conversacional, IP del método).
+  - `kb_sys_*` — el motor (arquitectura del ciclo, roles de cada skill, costes, modelo de madurez).
+  - `kb_plat_*` — adapter por plataforma (quirks de Dialogflow CX, runtime ADK local).
+  - `kb_proj_*` — específico del cliente activo (estado de Petal).
+  - Cada KB lleva estado explícito (🔴 no existe · 🟡 en curso · ✅ validado). Hoy varios `kb_ag_*`
+    y de proyecto están aún por construir — el `_index.md` lo refleja con honestidad.
+- **`metodologia/`** — método y librería de templates del ciclo de vida (briefing, query analysis,
+  layer assignment NLU/LLM, derivación de arquitectura, framework QAP). Incluye un `00_overview.md`
+  y un `system_inventory.md` que inventaría cada componente con su estado.
+- **`skills/`** — registro de las skills del sistema (`_index.md`), con su línea (ACT/GEN/QAP),
+  modelo asignado y estado. La mayoría están aún en estado 🔴/🟡 (definición o validación pendiente).
+- **`producto/`, `automatizacion/`, `proyectos/`** — diseño del ciclo de entrenamiento, backlog
+  del sistema y artefactos del proyecto Petal.
+
+> **Honestidad sobre CD:** CD es sobre todo **método y conocimiento documentado**, no código que
+> corra. Su valor de portfolio es mostrar que el sistema parte de un diseño explícito y gobernado,
+> no de improvisación. Una parte sustancial de los KBs y skills registrados están todavía en
+> roadmap; el `_index.md` de cada registro es la fuente honesta de qué existe y qué no.
+
+### ACT — Despliegue de artefactos  ·  ESTADO: ✅ construido y operativo
+
+- **Repo:** `cx-automation-template` — https://github.com/jeronimosanchez/cx-automation-template
+- **Local:** `~/cx-automation-template/`
+- **Qué hace:** despliega los 12 tipos de artefacto de un agente CX (Playbooks, Examples, Tools,
+  Agent Config, Flows, Pages, Intents, Entity Types, Webhooks, Generators, Environments, Versions)
+  desde definiciones versionadas en git hacia Dialogflow CX.
+- **Cómo:** pipeline **idempotente `LIST → diff → PATCH/POST solo lo que cambió`**; nunca recrea
+  recursos. CI/CD en GitHub Actions con autenticación **WIF (Workload Identity Federation)** — sin
+  claves de service account. El único camino a producción es `git push → CI/CD`.
+- **Madurez:** migración real de Petal completada (round-trip-clean validado contra CX), CI/CD verde,
+  con detalles de plataforma resueltos y documentados (LRO polling en versions, Full Update por el
+  bug regional de Playbooks en `europe-west1`, etc.).
+
+### QAP — Validación de agentes  ·  ESTADO: ✅ construido y operativo (CI verde)
+
+- **Repo:** `agent-validation-engine` — https://github.com/jeronimosanchez/agent-validation-engine
+- **Local:** `~/agent-validation-engine/`
+- **Qué hace:** **método + motor para validar** un agente conversacional, en tres planos:
+  1. **Auditoría estática** — analiza el diseño (YAML de playbooks) sin ejecutar el agente.
+  2. **Suite QA dinámica** — ejecuta casos de test contra la **plataforma real** y puntúa el comportamiento.
+  3. **Cribador local $0** — un proxy local (ADK + modelo local) que propone y criba hipótesis
+     gratis antes de gastar llamadas caras contra la plataforma (modelo de embudo:
+     *local propone y criba gratis · la plataforma confirma y decide*).
+- **Agnóstico:** el razonamiento de validación es portable; lo específico de CX vive en el adapter.
+- **Madurez:** repo propio, CI en verde. Recién extraído de ACT a su repo independiente para que
+  corra standalone.
+
+### GEN — Generación de artefactos  ·  ESTADO: ⛶ roadmap (por construir)
+
+- **Qué hará:** generar playbooks, examples e intents con un patrón adversarial
+  **generate → filter → validate** (un modelo genera variantes, otro filtra las mejores, la
+  plataforma valida). El objetivo es producir candidatos de calidad a bajo coste y pasarlos a QAP
+  para validación antes del gate humano.
+- **Estado:** diseñado a nivel de skills y pasos en `~/CD/skills/_index.md`, sin implementación aún.
+
+### RES — Investigación en background  ·  ESTADO: ⛶ roadmap (con plan)
+
+- **Qué hará:** investigación continua que alimenta la `kb` — un cron (p.ej. mensual) que busca y
+  destila documentación de plataformas y patrones nuevos, y propone actualizaciones de conocimiento.
+- **Estado:** tiene plan definido (GitHub Actions cron + modelo barato/free + búsqueda), sin
+  implementación aún. RES es **fuente** de conocimiento, no un KB en sí mismo.
+
+---
+
+## 4. Cómo se relacionan
+
+1. **CD gobierna; las líneas ejecutan.** El método, la `kb` y el registro de skills viven en CD.
+   Las 4 líneas son los brazos operativos que consumen ese conocimiento.
+2. **GEN ↔ QAP (genera ↔ dirige) → QAP aprueba → ACT despliega → outcomes vuelven a CD.** GEN es el
+   motor generativo: puede correr **solo** (genera propuestas/optimizaciones de forma proactiva) o
+   **servir a QAP** (genera candidatos que QAP valida). QAP **analiza, valida y decide** qué se aprueba
+   para desplegar — y puede **dirigir** a GEN pasándole su análisis como brief. Lo que QAP descubre se
+   destila de vuelta a la `kb`, mejorando las siguientes iteraciones. (Frontera: generación = GEN;
+   juicio/orquestación = QAP.)
+3. **RES corre en segundo plano** alimentando la `kb` con investigación, sin bloquear el ciclo.
+4. **La plataforma (CX hoy) es el sello final.** Ni el cribador local ni la auditoría estática
+   sustituyen la validación contra la plataforma real: proponen y abaratan, pero la plataforma decide.
+
+---
+
+## 5. Principio rector: la kb vive en CD
+
+> **La knowledge base es propiedad de CD y es la fuente única de verdad del sistema entero.**
+
+- Los **consumidores** (QAP hoy; GEN/RES mañana) **derivan o sincronizan** la `kb` desde CD y
+  **commitean el resultado** dentro de su propio repo. Así cada repo corre **standalone**: clonarlo
+  y ejecutarlo no exige tener CD presente.
+- **Nunca se hardcodean rutas tipo `~/CD`** en el código de los repos consumidores. La dependencia
+  con CD es de *sincronización* (un paso explícito que copia el conocimiento al repo), no de
+  *runtime* (el repo no lee de `~/CD` al ejecutar).
+- Consecuencia de diseño: CD puede evolucionar y reorganizarse sin romper a los consumidores, y
+  cada consumidor mantiene una copia versionada y trazable del conocimiento con el que opera.
+
+Esto refleja una decisión deliberada: separar **el conocimiento (durable, una sola copia maestra)**
+de **su uso (distribuido, versionado por repo)**, evitando tanto la duplicación descontrolada como
+el acoplamiento frágil a una máquina concreta.
+
+---
+
+## 6. Estado del sistema de un vistazo
+
+| Línea / capa | Repo / ubicación | Rol | Estado |
+|---|---|---|---|
+| **CD** | `~/CD/` | Hub: kb + método + skills (cerebro) | Existe · en construcción activa |
+| **ACT** | `cx-automation-template` | Despliegue idempotente a la plataforma + CI/CD | ✅ Operativo |
+| **QAP** | `agent-validation-engine` | Validación (estática + dinámica + cribador $0) | ✅ Operativo (CI verde) |
+| **GEN** | — | Generación de artefactos (adversarial) | ⛶ Roadmap |
+| **RES** | — | Investigación en background → kb | ⛶ Roadmap (con plan) |
+
+**Leyenda:** ✅ construido y operativo · ⛶ roadmap (diseñado, no implementado).
+
+---
+
+## 7. Qué demuestra este sistema (lectura de portfolio)
+
+- **Ingeniería de despliegue real:** un pipeline idempotente con CI/CD y autenticación federada
+  (WIF, sin claves), validado contra una plataforma cloud real (ACT).
+- **Cultura de calidad:** un motor de validación con auditoría estática, pruebas dinámicas contra la
+  plataforma y un cribador local de coste cero, pensado como embudo de coste (QAP).
+- **Pensamiento de sistema:** un diseño explícito y gobernado (CD) — knowledge base por capas,
+  método documentado, registro de skills con estados honestos — en lugar de scripts sueltos.
+- **Agnosticismo deliberado:** separación núcleo/adapter para no quedar atado a una plataforma.
+- **Honestidad de alcance:** la mitad del sistema (GEN, RES, gran parte de la kb y las skills) está
+  documentada como roadmap, no presentada como hecha.
+
+---
+
+*Borrador para revisión. No refleja necesariamente la organización final de carpetas ni la
+nomenclatura definitiva; el detalle vivo y autoritativo de cada componente está en los `_index.md`
+de `~/CD/kb/` y `~/CD/skills/` y en `~/CD/metodologia/system_inventory.md`.*
