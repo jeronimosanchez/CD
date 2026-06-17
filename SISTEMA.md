@@ -75,14 +75,16 @@ DESIGN  ──→  BUILD       ──→  VALIDATE  ──→  producción
 **② Optimización** — agente ya en producción con FAILs (**bucle** de Sistema A):
 
 ```
-        agente en producción
+   agente en producción
               │
               ▼
-  DETECTA  ──→  DIAGNOSTICA  ──→  REPARA       ──→  VALIDA
-  (QAP)                          (GEN + ACT)         │
-     ▲              no resuelto ◀────────────────────┘
-     └─ resuelto → aprende (Sistema B → CD/kb)
+  DETECTA ──→ DIAGNOSTICA ──→ REPARA ──→ VALIDA ──→ resuelto ──→ aprende
+     ▲                       (GEN+ACT)      │                   (Sistema B → CD/kb)
+     │                                      │
+     └────────────── no resuelto ──────────┘
 ```
+
+*El bucle lo orquesta QAP; solo **REPARA** consume **GEN** (genera el arreglo) + **ACT** (lo aplica).*
 
 Misma maquinaria (las 4 líneas + CD); **dos recorridos**. La **optimización es el escenario
 recurrente**: el greenfield ocurre **una vez** (al crear el agente), mientras que la optimización
