@@ -75,24 +75,9 @@ Cuando el sistema QAP madure y tenga repo propio, migrarán a `~/CD/skills/`.
 
 > Cadencia: cada 7 ciclos de Sistema A (síntesis estándar) o inmediato (contradicción detectada).
 
-### Fase 2 — Profundidad (E7)
-
-| Skill | Función | Estado |
-|---|---|---|
-| **test-expert** | Analiza desde la perspectiva de los TCs — gaps, calibración | 🔴 |
-| **integration-expert** | Analiza tools/webhooks/API — fallos de integración | 🔴 |
-| **infra-expert** | Analiza environments/versions/CI-CD — problemas de deploy | 🔴 |
-
-### Fase 3 — Avanzada (E11)
-
-| Skill | Función | Estado |
-|---|---|---|
-| **routing-expert** | Analiza flows/intents/entities — enrutamiento NLU | 🔴 |
-| **llm-expert** | Analiza comportamiento de Gemini — alucinaciones, varianza | 🔴 |
-
 ### Reserva (`skills/_reserve/`) — retiradas de diagnóstico
 
-> Skills retiradas del ciclo activo el 2026-06-16 al simplificar la fase de causa raíz del Sistema A. No se borran: viven en `~/CD/skills/_reserve/` por si se reactivan.
+> Skills retiradas al simplificar la causa raíz del Sistema A (**modelo comité → pipeline**). Las que **existían** se conservan en `~/CD/skills/_reserve/`. Las **expertas por elemento que nunca se construyeron** se quitaron de la lista (eran aspiracionales del modelo comité; el trace de CX ya cubre esas capas o el pipeline no las necesita): **test-expert, integration-expert, infra-expert, routing-expert, llm-expert**.
 
 | Skill | Por qué se retiró | Ubicación |
 |---|---|---|
