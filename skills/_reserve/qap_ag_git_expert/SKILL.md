@@ -3,7 +3,7 @@ name: qap_ag_git_expert
 version: 0.1
 línea: QAP
 scope: ag
-estado: 🔴 No existe
+estado: 🟤 En reserva  # 2026-06-16: retirada de diagnóstico — es un lookup mecánico (git log), no necesita ser skill LLM. Conservada en _reserve/ por si se reactiva.
 descripción: >
   Experto del comité en el historial de cambios (Capa 3).
   Analiza el git del proyecto para responder: ¿ya se intentó este fix?

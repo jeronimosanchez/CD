@@ -3,7 +3,7 @@ name: qap_proj_petal_inventory_expert
 version: 0.1
 línea: QAP
 scope: proj
-estado: 🔴 No existe
+estado: 🟤 En reserva  # 2026-06-16: retirada de diagnóstico — redundante con el trace de CX (la info de inventario ya viene del trace de la tool call). Conservada en _reserve/ por si se reactiva.
 descripción: >
   Experto del comité en la capa de inventario/catálogo (Capa 2).
   Analiza los FAILs desde la perspectiva de la Sheet de Petal y del petal-sheet-api.

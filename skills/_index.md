@@ -39,9 +39,7 @@ Cuando el sistema QAP madure y tenga repo propio, migrarán a `~/CD/skills/`.
 | 3 | ADK runner | Ejecuta conversaciones contra el agente — devuelve PASS/FAIL | — | **Infra** | — | 🔴 |
 | 5 | **qap_ag_cluster_analyzer** | Agrupa FAILs por similitud semántica → patrones con ROI | QAP | Skill | Embeddings local ($0) | 🔴 |
 | 6 | **qap_plat_cx_playbook_expert** | Experto comité capa comportamiento — identifica instrucción causante con cita exacta | QAP | Skill | Gemini Flash free | 🔴 |
-| 6 | **qap_proj_petal_inventory_expert** | Experto comité capa inventario — analiza tool calls y Sheet de Petal | QAP | Skill | Gemini Flash free | 🔴 |
-| 6 | **qap_ag_git_expert** | Experto comité historial git — ¿ya se intentó? ¿se revirtió? | QAP | Skill | Claude API | 🔴 |
-| 7 | **qap_ag_hypothesis_generator** | Sintetiza informes del comité en 3-5 hipótesis con predicción % — extensible, no repite intentos fallidos | QAP | Skill | Claude API | 🔴 |
+| 7 | **qap_ag_hypothesis_generator** | Sintetiza los informes del comité en un diferencial ranqueado de 2-4 hipótesis de CAUSA (abducción) — extensible, no repite intentos fallidos. Es diagnóstico; el fix concreto lo genera `gen_plat_cx_hypothesis_fixer`. | QAP | Skill | Claude API | 🔴 |
 | 8 | **gen_plat_cx_hypothesis_fixer** | Genera cambio puntual (sección + contenido nuevo) — NO el playbook completo | GEN | Skill | Gemini Flash free | 🔴 |
 | 9 | hypothesis-validator | Testa el fix: Fase A ADK + Fase B staging CX (entornos efímeros por hipótesis) | — | **Infra** | — | 🔴 |
 | 10 | **qap_ag_juez** | Evalúa respuesta real vs rúbrica — veredicto por criterio (sí/no/parcial) con evidencia | QAP | Skill | Claude API | 🔴 |
@@ -91,6 +89,15 @@ Cuando el sistema QAP madure y tenga repo propio, migrarán a `~/CD/skills/`.
 |---|---|---|
 | **routing-expert** | Analiza flows/intents/entities — enrutamiento NLU | 🔴 |
 | **llm-expert** | Analiza comportamiento de Gemini — alucinaciones, varianza | 🔴 |
+
+### Reserva (`skills/_reserve/`) — retiradas de diagnóstico
+
+> Skills retiradas del ciclo activo el 2026-06-16 al simplificar la fase de causa raíz del Sistema A. No se borran: viven en `~/CD/skills/_reserve/` por si se reactivan.
+
+| Skill | Por qué se retiró | Ubicación |
+|---|---|---|
+| **qap_proj_petal_inventory_expert** | Redundante — la info de inventario ya la da el trace de la tool call en CX | `skills/_reserve/qap_proj_petal_inventory_expert/` |
+| **qap_ag_git_expert** | Lookup mecánico (`git log`); no necesita ser skill LLM | `skills/_reserve/qap_ag_git_expert/` |
 
 ---
 

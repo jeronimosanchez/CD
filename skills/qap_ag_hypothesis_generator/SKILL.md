@@ -5,9 +5,11 @@ línea: QAP
 scope: ag
 estado: 🔴 No existe
 descripción: >
-  Sintetiza los informes de N expertos del comité en 3-5 hipótesis concretas y accionables,
+  Sintetiza los informes de N expertos en 3-5 hipótesis concretas y accionables,
   cada una con predicción de mejora en % y riesgos identificados.
-  La skill no analiza el agente directamente — razona sobre los análisis ya hechos.
+  La skill no analiza el agente directamente — razona sobre los análisis ya hechos
+  para producir hipótesis de CAUSA (abducción). Es diagnóstico (QAP), no generación de fixes:
+  el fix concreto lo genera gen_plat_cx_hypothesis_fixer (GEN).
 kbs:
   - kb_ag_global      # principios universales de diagnóstico y diseño
   - kb_sys_core       # estructura del motor: qué niveles puede tocar, restricciones, qué ya se intentó
@@ -33,6 +35,8 @@ output:
 ---
 
 # qap_ag_hypothesis_generator
+
+> ℹ️ Genera hipótesis de CAUSA (abducción) a partir de los informes del comité → es diagnóstico (QAP). El fix concreto lo genera `gen_plat_cx_hypothesis_fixer` (GEN).
 
 > ⚠️ SKILL EN CONSTRUCCIÓN — este archivo es el placeholder. El contenido real se escribe al construir la skill.
 
