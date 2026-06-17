@@ -10,13 +10,15 @@
 ## 1. Qué es este sistema
 
 Un sistema para **diseñar, desplegar y validar agentes conversacionales** de calidad
-production-grade, de forma automatizada y **agnóstica de plataforma**.
+production-grade, de forma automatizada y **con vocación agnóstica de plataforma**.
 
 El caso piloto es **Petal**, un agente de comercio de flores en español construido sobre
 Dialogflow CX, tratado como una simulación profesional (estructura, procesos y calidad de
-un proyecto real en producción). El sistema, sin embargo, está diseñado para no depender de
-Petal ni de CX: el método y el motor son los mismos para CX, Lex, Voiceflow o un agente custom;
-lo que cambia por cliente y plataforma es un *adapter*, no el núcleo.
+un proyecto real en producción). Desde el inicio está **enfocado a no depender de Petal ni de CX**:
+el diseño separa un **núcleo** (el método de validación/optimización) de un **adapter** por plataforma.
+Pero el agnosticismo es **evolutivo** — se gana a medida que se construyen las líneas y se prueba el
+sistema contra otros agentes y plataformas (Lex, Voiceflow, custom), no se da por hecho. Hoy **se está
+validando sobre CX**; la transferencia a otras plataformas es **objetivo de diseño, aún por demostrar**.
 
 El sistema se organiza en **4 líneas de automatización** (ACT, GEN, QAP, RES) coordinadas alrededor de
 un **hub de conocimiento y método (CD)** que actúa como cerebro y fuente única de verdad.
