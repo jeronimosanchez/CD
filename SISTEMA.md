@@ -84,7 +84,10 @@ DESIGN  ──→  BUILD       ──→  VALIDATE  ──→  producción
      └─ resuelto → aprende (Sistema B → CD/kb)
 ```
 
-Misma maquinaria (las 4 líneas + CD); **dos recorridos**.
+Misma maquinaria (las 4 líneas + CD); **dos recorridos**. La **optimización es el escenario
+recurrente**: el greenfield ocurre **una vez** (al crear el agente), mientras que la optimización
+es el **ciclo continuo** donde el sistema gobierna la calidad día a día — es donde aporta su valor
+principal.
 
 ---
 
