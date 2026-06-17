@@ -88,7 +88,10 @@ DESIGN  ──→  BUILD       ──→  VALIDATE  ──→  producción
      └────────────── no resuelto ──────────┘
 ```
 
-*El bucle lo orquesta QAP; solo **REPARA** consume **GEN** (genera el arreglo) + **ACT** (lo aplica).*
+**Sistema A** (optimización) = el bucle de arriba: un ciclo que **QAP lidera** (detecta, diagnostica,
+valida) y que usa **GEN** (genera el arreglo) y **ACT** (lo aplica). **Sistema B** (aprendizaje) =
+destila cada arreglo confirmado en conocimiento reutilizable para el KB, para que el sistema mejore
+con cada ciclo. Son los **dos motores** de QAP.
 
 Misma maquinaria (las 4 líneas + CD); **dos recorridos**. La **optimización es el escenario
 recurrente**: el greenfield ocurre **una vez** (al crear el agente), mientras que la optimización
