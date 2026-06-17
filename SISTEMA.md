@@ -62,18 +62,29 @@ graph TD
 
 </details>
 
-Vista lineal del ciclo de vida de un agente (las 5 fases con las que se alinea el sistema).
-El trabajo puede **entrar por dos sitios**: ① *greenfield* (agente nuevo) por DESIGN, o
-② *optimización* (un agente ya en producción con FAILs) por VALIDATE:
+El sistema se alinea con las **5 fases del ciclo de vida** de un agente (DESIGN · BUILD · VALIDATE ·
+ITERATE · STRATEGIC) y **se adapta a dos escenarios de entrada**, cada uno con su forma:
+
+**① Greenfield** — agente nuevo, de cero (recorrido **lineal**):
 
 ```
-   ① Greenfield                                ② Optimización
-   (crear de cero)                             (FAILs de QA)
-        │                                            │
-        ▼                                            ▼
- DESIGN   →  BUILD        →  VALIDATE  →  ITERATE        →  STRATEGIC
- (CD)        (GEN + ACT)     (QAP)        (outcomes→CD/kb)   (RES)
+DESIGN  ──→  BUILD       ──→  VALIDATE  ──→  producción
+(CD)         (GEN + ACT)      (QAP)
 ```
+
+**② Optimización** — agente ya en producción con FAILs (**bucle**, Sistema A):
+
+```
+       agente en producción
+             │
+             ▼
+  VALIDATE  ──→  DIAGNOSTICA  ──→  REPARA      ──→  VALIDA
+  (QAP)                            (GEN + ACT)        │
+     ▲              no resuelto ◀────────────────────┘
+     └─ resuelto → aprende (Sistema B → CD/kb)
+```
+
+Misma maquinaria (las 4 líneas + CD); **dos recorridos**.
 
 ---
 
@@ -88,19 +99,18 @@ Contenido real (carpeta `~/CD/`):
 
 - **`kb/`** — la *knowledge base*, fuente única de verdad. Organizada en 4 capas con nomenclatura
   propia y gobierno (`_index.md`, `_politica_kb.md`, `_nomenclatura_kbs.md`):
-  - `kb_ag_*` — agnóstico (principios de diseño conversacional, IP del método).
+  - `kb_ag_*` — agnóstico: principios de diseño conversacional **y el método** (los pasos de diseño / greenfield), IP del método.
   - `kb_sys_*` — el motor (arquitectura del ciclo, roles de cada skill, costes, modelo de madurez).
   - `kb_plat_*` — adapter por plataforma (quirks de Dialogflow CX, runtime ADK local).
   - `kb_proj_*` — específico del cliente activo (estado de Petal).
   - Cada KB lleva estado explícito (🔴 no existe · 🟡 en curso · ✅ validado). Hoy varios `kb_ag_*`
     y de proyecto están aún por construir — el `_index.md` lo refleja con honestidad.
-- **`metodologia/`** — método y librería de templates del ciclo de vida (briefing, query analysis,
-  layer assignment NLU/LLM, derivación de arquitectura, framework QAP). Incluye un `00_overview.md`
-  y un `system_inventory.md` que inventaría cada componente con su estado.
+- **`metodologia/`** — los **pasos y templates del ciclo de vida** (briefing, análisis de query,
+  asignación NLU/LLM, derivación de arquitectura, framework QAP) + `system_inventory.md`. Es
+  **conocimiento agnóstico** → conceptualmente pertenece a `kb_ag`; hoy en carpeta aparte,
+  **consolidación en la kb pendiente**.
 - **`skills/`** — registro de las skills del sistema (`_index.md`), con su línea (ACT/GEN/QAP),
   modelo asignado y estado. La mayoría están aún en estado 🔴/🟡 (definición o validación pendiente).
-- **`producto/`, `automatizacion/`, `proyectos/`** — diseño del ciclo de entrenamiento, backlog
-  del sistema y artefactos del proyecto Petal.
 
 > **Honestidad sobre CD:** CD es sobre todo **método y conocimiento documentado**, no código que
 > corra. Su valor de portfolio es mostrar que el sistema parte de un diseño explícito y gobernado,
