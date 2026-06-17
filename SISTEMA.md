@@ -156,7 +156,7 @@ Contenido real (carpeta `~/CD/`):
 - **Madurez:** repo propio, CI en verde. Lo anterior es **v1.0 (validación), operativo**.
 - **v1.1 (en construcción):** QAP 1.1 = **Sistema A** (optimización: diagnostica → repara → valida)
   + **Sistema B** (capitalización del conocimiento). Sistema A diseñado y parcialmente operativo;
-  Sistema B por construir. Detalle en `docs/sistema_a/`.
+  Sistema B por construir. Detalle en [`agent-validation-engine/docs/sistema_a/`](https://github.com/jeronimosanchez/agent-validation-engine/tree/main/docs/sistema_a) (repo QAP).
 
 ### GEN — Generación de artefactos  ·  ESTADO: por construir (diseñado)
 
