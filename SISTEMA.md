@@ -72,10 +72,10 @@ DESIGN  ──→  BUILD       ──→  VALIDATE  ──→  producción
 (CD)         (GEN + ACT)      (QAP)
 ```
 
-**② Optimización** — agente ya en producción con FAILs (**bucle** de Sistema A):
+**② Optimización** — un agente ya existente que **falla pruebas de QA**: el sistema lo mejora con el **bucle de Sistema A**:
 
 ```
-   agente en producción
+   agente con FAILs en QA
               │
               ▼
   DETECTA ──→ DIAGNOSTICA ──→ REPARA ──→ VALIDA ──→ resuelto ──→ aprende
