@@ -3,9 +3,7 @@
 > **Documento de visión del sistema de Automatización CD (Conversational Design).**
 > Estado: BORRADOR · Fecha: 2026-06-15 · Autor: Jerónimo Sánchez
 >
-> Audiencia: un evaluador técnico (empleador) que revisa este trabajo como portfolio.
-> Objetivo: dar una vista de conjunto honesta — qué está **construido y operativo** hoy
-> y qué es **roadmap** — sin inflar el alcance.
+> Distingue lo que está **construido y operativo** hoy de lo que es **roadmap**.
 
 ---
 
@@ -20,7 +18,7 @@ un proyecto real en producción). El sistema, sin embargo, está diseñado para 
 Petal ni de CX: el método y el motor son los mismos para CX, Lex, Voiceflow o un agente custom;
 lo que cambia por cliente y plataforma es un *adapter*, no el núcleo.
 
-El sistema se organiza en **4 líneas operativas** (ACT, GEN, QAP, RES) coordinadas alrededor de
+El sistema se organiza en **4 líneas de automatización** (ACT, GEN, QAP, RES) coordinadas alrededor de
 un **hub de conocimiento y método (CD)** que actúa como cerebro y fuente única de verdad.
 
 ---
@@ -35,10 +33,10 @@ un **hub de conocimiento y método (CD)** que actúa como cerebro y fuente únic
 ```mermaid
 graph TD
     CD["CD — Hub de conocimiento<br/>kb · método · skills"]
-    GEN["GEN — Generación · ROADMAP"]
-    QAP["QAP — Validación + análisis · OPERATIVO"]
+    GEN["GEN — Generación · POR CONSTRUIR"]
+    QAP["QAP — Validación + Sistema A/B · PARCIAL"]
     ACT["ACT — Despliegue · OPERATIVO"]
-    RES["RES — Investigación · ROADMAP"]
+    RES["RES — Investigación · POR CONSTRUIR"]
     PLAT[("Plataforma · Dialogflow CX")]
 
     CD -. método/kb .-> GEN
@@ -62,11 +60,17 @@ graph TD
 
 </details>
 
-Vista lineal del ciclo de vida de un agente (las 5 fases con las que se alinea el sistema):
+Vista lineal del ciclo de vida de un agente (las 5 fases con las que se alinea el sistema).
+El trabajo puede **entrar por dos sitios**: ① *greenfield* (agente nuevo) por DESIGN, o
+② *optimización* (un agente ya en producción con FAILs) por VALIDATE:
 
 ```
-DESIGN  →  BUILD        →  VALIDATE  →  ITERATE        →  STRATEGIC
-(CD)       (GEN + ACT)     (QAP)        (outcomes→CD/kb)   (RES)
+   ① Greenfield                                ② Optimización
+   (crear de cero)                             (FAILs de QA)
+        │                                            │
+        ▼                                            ▼
+ DESIGN   →  BUILD        →  VALIDATE  →  ITERATE        →  STRATEGIC
+ (CD)        (GEN + ACT)     (QAP)        (outcomes→CD/kb)   (RES)
 ```
 
 ---
@@ -115,7 +119,7 @@ Contenido real (carpeta `~/CD/`):
   con detalles de plataforma resueltos y documentados (LRO polling en versions, Full Update por el
   bug regional de Playbooks en `europe-west1`, etc.).
 
-### QAP — Validación de agentes  ·  ESTADO: ✅ construido y operativo (CI verde)
+### QAP — Validación de agentes  ·  ESTADO: 🟡 parcialmente construido (v1.0 validación operativa · Sistema A/B en construcción)
 
 - **Repo:** `agent-validation-engine` — https://github.com/jeronimosanchez/agent-validation-engine
 - **Local:** `~/agent-validation-engine/`
@@ -126,30 +130,35 @@ Contenido real (carpeta `~/CD/`):
      gratis antes de gastar llamadas caras contra la plataforma (modelo de embudo:
      *local propone y criba gratis · la plataforma confirma y decide*).
 - **Agnóstico:** el razonamiento de validación es portable; lo específico de CX vive en el adapter.
-- **Madurez:** repo propio, CI en verde. Recién extraído de ACT a su repo independiente para que
-  corra standalone.
+- **Madurez:** repo propio, CI en verde. Lo anterior es **v1.0 (validación), operativo**.
+- **v1.1 (en construcción):** QAP 1.1 = **Sistema A** (optimización: diagnostica → repara → valida)
+  + **Sistema B** (capitalización del conocimiento). Sistema A diseñado y parcialmente operativo;
+  Sistema B por construir. Detalle en `docs/sistema_a/`.
 
-### GEN — Generación de artefactos  ·  ESTADO: ⛶ roadmap (por construir)
+### GEN — Generación de artefactos  ·  ESTADO: por construir (diseñado)
 
 - **Qué hará:** generar playbooks, examples e intents con un patrón adversarial
   **generate → filter → validate** (un modelo genera variantes, otro filtra las mejores, la
   plataforma valida). El objetivo es producir candidatos de calidad a bajo coste y pasarlos a QAP
   para validación antes del gate humano.
-- **Estado:** diseñado a nivel de skills y pasos en `~/CD/skills/_index.md`, sin implementación aún.
+- **Estado:** repo `GEN/` + skills y método (generate → filter → validate) diseñados en
+  `~/CD/skills/_index.md`, **sin implementación aún**. Su skill `gen_plat_cx_hypothesis_fixer`
+  la consume Sistema A·REPARA.
 
-### RES — Investigación en background  ·  ESTADO: ⛶ roadmap (con plan)
+### RES — Investigación en background  ·  ESTADO: por construir
 
 - **Qué hará:** investigación continua que alimenta la `kb` — un cron (p.ej. mensual) que busca y
   destila documentación de plataformas y patrones nuevos, y propone actualizaciones de conocimiento.
-- **Estado:** tiene plan definido (GitHub Actions cron + modelo barato/free + búsqueda), sin
-  implementación aún. RES es **fuente** de conocimiento, no un KB en sí mismo.
+- **Estado:** por construir. Alimenta la `kb` con investigación. RES es **fuente** de conocimiento,
+  no un KB en sí mismo.
 
 ---
 
 ## 4. Cómo se relacionan
 
 1. **CD gobierna; las líneas ejecutan.** El método, la `kb` y el registro de skills viven en CD.
-   Las 4 líneas son los brazos operativos que consumen ese conocimiento.
+   Las **4 líneas — ACT (despliegue), QAP (validación), GEN (generación), RES (investigación)** —
+   son los brazos operativos que consumen ese conocimiento.
 2. **GEN ↔ QAP (genera ↔ dirige) → QAP aprueba → ACT despliega → outcomes vuelven a CD.** GEN es el
    motor generativo: puede correr **solo** (genera propuestas/optimizaciones de forma proactiva) o
    **servir a QAP** (genera candidatos que QAP valida). QAP **analiza, valida y decide** qué se aprueba
@@ -159,6 +168,9 @@ Contenido real (carpeta `~/CD/`):
 3. **RES corre en segundo plano** alimentando la `kb` con investigación, sin bloquear el ciclo.
 4. **La plataforma (CX hoy) es el sello final.** Ni el cribador local ni la auditoría estática
    sustituyen la validación contra la plataforma real: proponen y abaratan, pero la plataforma decide.
+5. **El trabajo entra por dos sitios.** ① *Greenfield* (agente nuevo) → **GEN**. ② *Optimización*
+   (un agente con FAILs) → **QAP**. En optimización, QAP dispara **Sistema A** (diagnostica → repara →
+   valida), consumiendo **GEN** (generar parches) y **ACT** (desplegar).
 
 ---
 
@@ -187,11 +199,11 @@ el acoplamiento frágil a una máquina concreta.
 |---|---|---|---|
 | **CD** | `~/CD/` | Hub: kb + método + skills (cerebro) | Existe · en construcción activa |
 | **ACT** | `cx-automation-template` | Despliegue idempotente a la plataforma + CI/CD | ✅ Operativo |
-| **QAP** | `agent-validation-engine` | Validación (estática + dinámica + cribador $0) | ✅ Operativo (CI verde) |
-| **GEN** | — | Generación de artefactos (adversarial) | ⛶ Roadmap |
-| **RES** | — | Investigación en background → kb | ⛶ Roadmap (con plan) |
+| **QAP** | `agent-validation-engine` | Validación (estática + dinámica + cribador $0) + Sistema A/B | 🟡 Parcialmente construido (v1.0 ✅ · Sistema A/B en construcción) |
+| **GEN** | `GEN/` | Generación de artefactos (adversarial) | Por construir (diseñado) |
+| **RES** | `RES/` | Investigación en background → kb | Por construir |
 
-**Leyenda:** ✅ construido y operativo · ⛶ roadmap (diseñado, no implementado).
+**Leyenda:** ✅ construido y operativo · 🟡 parcialmente construido · por construir (diseñado, no implementado).
 
 ---
 
@@ -204,8 +216,8 @@ el acoplamiento frágil a una máquina concreta.
 - **Pensamiento de sistema:** un diseño explícito y gobernado (CD) — knowledge base por capas,
   método documentado, registro de skills con estados honestos — en lugar de scripts sueltos.
 - **Agnosticismo deliberado:** separación núcleo/adapter para no quedar atado a una plataforma.
-- **Honestidad de alcance:** la mitad del sistema (GEN, RES, gran parte de la kb y las skills) está
-  documentada como roadmap, no presentada como hecha.
+- **Honestidad de alcance:** buena parte del sistema (GEN, RES, el Sistema A/B de QAP, y gran parte
+  de la kb y las skills) está **por construir**, no presentada como hecha.
 
 ---
 
