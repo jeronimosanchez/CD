@@ -131,7 +131,7 @@ Contenido real (carpeta `~/CD/`):
   con detalles de plataforma resueltos y documentados (LRO polling en versions, Full Update por el
   bug regional de Playbooks en `europe-west1`, etc.).
 
-### QAP — Validación de agentes  ·  ESTADO: 🟡 parcialmente construido (v1.0 validación operativa · Sistema A/B en construcción)
+### QAP — Validación de agentes  ·  ESTADO: 🟡 v1.0 (validación) operativo · v1.1 (Sistema A/B) en construcción
 
 - **Repo:** `agent-validation-engine` — https://github.com/jeronimosanchez/agent-validation-engine
 - **Local:** `~/agent-validation-engine/`
@@ -211,7 +211,7 @@ el acoplamiento frágil a una máquina concreta.
 |---|---|---|---|
 | **CD** | `~/CD/` | Hub: kb + método + skills (cerebro) | Existe · en construcción activa |
 | **ACT** | `cx-automation-template` | Despliegue idempotente a la plataforma + CI/CD | ✅ Operativo |
-| **QAP** | `agent-validation-engine` | Validación (estática + dinámica + cribador $0) + Sistema A/B | 🟡 Parcialmente construido (v1.0 ✅ · Sistema A/B en construcción) |
+| **QAP** | `agent-validation-engine` | v1.0 Validación (estática + dinámica + cribador $0) · v1.1 Sistema A/B | 🟡 **v1.0 construido** · **v1.1 (Sistema A/B) en construcción** |
 | **GEN** | `GEN/` | Generación de artefactos (adversarial) | Por construir (diseñado) |
 | **RES** | `RES/` | Investigación en background → kb | Por construir |
 
