@@ -23,6 +23,10 @@ validando sobre CX**; la transferencia a otras plataformas es **objetivo de dise
 El sistema se organiza en **4 líneas de automatización** (ACT, GEN, QAP, RES) coordinadas alrededor de
 un **hub de conocimiento y método (CD)** que actúa como cerebro y fuente única de verdad.
 
+**Fase actual:** prueba de concepto en **desarrollo iterativo** — construida con rigor de producción
+(CI/CD real, plataforma real) pero **en validación del enfoque**, no en operación comercial. Petal es
+un **sandbox** para probar el método. *"Production-grade" = calidad de ingeniería, no que esté en producción.*
+
 ---
 
 ## 2. Mapa de conjunto
