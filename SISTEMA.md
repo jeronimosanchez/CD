@@ -114,7 +114,7 @@ el método y las skills** que el resto de líneas consumen.
 Contenido real (carpeta `~/CD/`):
 
 - **`kb/`** — la *knowledge base*, fuente única de verdad. Organizada en 4 capas con nomenclatura
-  propia y gobierno (`_index.md`, `_politica_kb.md`, `_nomenclatura_kbs.md`):
+  propia y gobierno (`_index.md` = la lista · `_gobierno_kb.md` = nomenclatura, estructura de entrada y proceso · `_mapa.md` = grafo de carga):
   - `kb_ag_*` — agnóstico: principios de diseño conversacional **y el método** (los pasos de diseño / greenfield), IP del método.
   - `kb_sys_*` — el motor (arquitectura del ciclo, roles de cada skill, costes, principios de operación).
   - `kb_plat_*` — adapter por plataforma (quirks de Dialogflow CX, runtime ADK local).
