@@ -13,3 +13,14 @@ proyectos/petal/petal-sheet-api-v11/
 
 # Control privado de skills (trabajo nuevo — no es escaparate)
 skills/_control.md
+
+# KBs, gobierno y herramientas — PRIVADOS (escaparate en kb/_index.md; contenido bajo solicitud)
+kb/kb_*.md
+kb/_gobierno_kb.md
+kb/_mapa.md
+kb/_politica_kb.md
+kb/_nomenclatura_kbs.md
+kb/research_adk_*.md
+kb/kb_doctor.py
+hooks/pre-commit
+proyectos/*/_durable/kb/kb_*.md

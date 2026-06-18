@@ -113,13 +113,7 @@ el método y las skills** que el resto de líneas consumen.
 
 Contenido real (carpeta `~/CD/`):
 
-- **`kb/`** — la *knowledge base*, fuente única de verdad. Organizada en 4 capas con nomenclatura
-  propia y gobierno (`_index.md` = la lista · `_gobierno_kb.md` = nomenclatura, estructura de entrada y proceso · `_mapa.md` = grafo de carga):
-  - `kb_ag_*` — agnóstico: principios de diseño conversacional **y el método** (los pasos de diseño / greenfield), IP del método.
-  - `kb_sys_*` — el motor (arquitectura del ciclo, roles de cada skill, costes, principios de operación).
-  - `kb_plat_*` — adapter por plataforma (quirks de Dialogflow CX, runtime ADK local).
-  - `kb_proj_*` — específico del cliente activo (estado de Petal).
-  - Cada KB lleva **estado explícito** (✅ validado · 🟡 en curso · 🔴 por construir); varios están aún por construir. Estado real por KB en [`kb/_index.md`](kb/_index.md).
+- **`kb/`** — base de conocimiento curada, **contenido privado**. El alcance público —qué KBs existen y su volumen— está en [`kb/_index.md`](kb/_index.md). El contenido completo, el método de gobierno y las herramientas de validación se comparten **bajo solicitud**.
 - **`metodologia/`** — los **pasos y templates del ciclo de vida** (briefing, análisis de query,
   asignación NLU/LLM, derivación de arquitectura, framework QAP) + `system_inventory.md`. Es
   **conocimiento agnóstico** → conceptualmente pertenece a `kb_ag`; hoy en carpeta aparte,
