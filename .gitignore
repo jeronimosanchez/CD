@@ -10,3 +10,6 @@ proyectos/*/_durable/coverage_matrix.yaml
 
 proyectos/petal/petal-sheet-api/
 proyectos/petal/petal-sheet-api-v11/
+
+# Control privado de skills (trabajo nuevo — no es escaparate)
+skills/_control.md
