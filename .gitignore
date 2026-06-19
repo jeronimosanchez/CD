@@ -1,6 +1,9 @@
 # PDFs y binarios
 *.pdf
 
+# Referencias externas — solo local, no se versiona
+references/
+
 # Datos operativos del ciclo (no versionar — crecen cada noche)
 proyectos/*/_durable/log_hypotheses.jsonl
 proyectos/*/_durable/coverage_matrix.yaml
