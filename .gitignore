@@ -1,5 +1,6 @@
-# PDFs y binarios
+# PDFs y binarios (excepto referencias públicas versionadas)
 *.pdf
+!references/**/*.pdf
 
 # Datos operativos del ciclo (no versionar — crecen cada noche)
 proyectos/*/_durable/log_hypotheses.jsonl
@@ -11,8 +12,9 @@ proyectos/*/_durable/coverage_matrix.yaml
 proyectos/petal/petal-sheet-api/
 proyectos/petal/petal-sheet-api-v11/
 
-# Control privado de skills (trabajo nuevo — no es escaparate)
+# Control y gobierno privados de skills (no es escaparate)
 skills/_control.md
+skills/_gobierno_skills.md
 
 # KBs, gobierno y herramientas — PRIVADOS (escaparate en kb/_index.md; contenido bajo solicitud)
 kb/kb_*.md
