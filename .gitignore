@@ -1,6 +1,5 @@
-# PDFs y binarios (excepto referencias públicas versionadas)
+# PDFs y binarios
 *.pdf
-!references/**/*.pdf
 
 # Datos operativos del ciclo (no versionar — crecen cada noche)
 proyectos/*/_durable/log_hypotheses.jsonl
