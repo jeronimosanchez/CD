@@ -234,11 +234,40 @@ el acoplamiento frágil a una máquina concreta.
   (WIF, sin claves), validado contra una plataforma cloud real (ACT).
 - **Cultura de calidad:** un motor de validación con auditoría estática, pruebas dinámicas contra la
   plataforma y un cribador local de coste cero, pensado como embudo de coste (QAP).
+- **Criterio de calidad codificado:** un framework de análisis conversacional documentado y mantenido con research, no dependiente del juicio del momento — el Conversational Quality Architect lo define; el sistema lo aplica de forma consistente entre proyectos.
 - **Pensamiento de sistema:** un diseño explícito y gobernado (CD) — knowledge base por capas,
   método documentado, registro de skills con estados honestos — en lugar de scripts sueltos.
 - **Agnosticismo deliberado:** separación núcleo/adapter para no quedar atado a una plataforma.
 - **Honestidad de alcance:** buena parte del sistema (GEN, RES, el Sistema A/B de QAP, y gran parte
   de la kb y las skills) está **por construir**, no presentada como hecha.
+
+---
+
+## 8. Modelo de roles y operación
+
+### Los tres roles
+
+**Conversational Quality Architect**
+Define el sistema de calidad: el framework de análisis, las dimensiones, las rúbricas y el método. Lo actualiza con research continuo. Es la autoridad metodológica — decide qué es calidad conversacional y cómo se mide. Define la norma y el sistema la aplica a escala, con capacidad de implicación completa en cada proyecto durante todo su ciclo de vida.
+
+**Developer**
+Responsable de la implementación técnica en el proyecto: construye y mantiene el pipeline de despliegue, ejecuta la suite QA, gestiona la integración con la plataforma y aplica los fixes. Trabaja con el framework que define el Conversational Quality Architect. La distinción clave: el Developer ejecuta; el Conversational Quality Architect juzga.
+
+**Cliente**
+El propietario del agente que se está construyendo u optimizando. Toma decisiones de negocio: aprueba deploys a su producción, define restricciones que el sistema no puede conocer, valida que las propuestas del sistema encajan con sus prioridades. No necesita entender el método — solo sus puntos de decisión.
+
+### Gates por rol
+
+| Gate | Conversational Quality Architect | Developer | Cliente |
+|---|---|---|---|
+| Definir y adaptar el framework de calidad al proyecto | ✓ Define | — | ✓ Valida que encaja con su negocio |
+| Interpretar resultados QA | ✓ Juzga | ○ Soporte técnico | — |
+| Decidir qué fix aplicar | ✓ Criterio metodológico | ○ Viabilidad técnica | ✓ Prioridad de negocio |
+| Aprobar deploy a producción | ✓ Gate de calidad | Ejecuta | ✓ Gate de negocio |
+| Validar que el resultado resuelve el problema | ✓ Calidad conversacional | — | ✓ Negocio |
+| Actualizar el framework con research | ✓ | — | — |
+
+*✓ gate / decide · ○ participa sin gate · — no interviene*
 
 ---
 
