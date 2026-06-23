@@ -9,7 +9,7 @@
 | Knowledge Base | Tema | Volumen | Acceso | Estado |
 |---|---|---|---|---|
 | `kb_ag_global` | Principios agnósticos de diseño conversacional | 50 entradas | privado | ✅ |
-| `kb_ag_tc_generation` | Generación de TCs para agentes conversacionales | 2 entradas | privado | 🟡 |
+| `kb_ag_tc_generation` | Generación de TCs para agentes conversacionales | 3 entradas | privado | 🟡 |
 | `kb_plat_cx` | Quirks y best practices de Dialogflow CX | 43 entradas | privado | ✅ |
 | `kb_plat_adk` | Técnica de cribado local con ADK | 45 entradas | privado | ✅ |
 | `kb_sys_core` | Arquitectura del sistema | 23 entradas | privado | ✅ |
