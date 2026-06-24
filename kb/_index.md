@@ -8,15 +8,16 @@
 
 | Knowledge Base | Tema | Volumen | Acceso | Estado |
 |---|---|---|---|---|
-| `kb_ag_global` | Principios agnósticos de diseño conversacional | 50 entradas | privado | ✅ |
+| `kb_ag_global` | Principios agnósticos de diseño conversacional | 52 entradas | privado | ✅ |
 | `kb_ag_tc_generation` | Generación de TCs para agentes conversacionales | 3 entradas | privado | 🟡 |
-| `kb_plat_cx` | Quirks y best practices de Dialogflow CX | 43 entradas | privado | ✅ |
+| `kb_ag_tono` | Trabajo del tono en agentes generativos (LLM/playbooks) | 9 entradas | privado | ✅ |
+| `kb_plat_cx` | Quirks y best practices de Dialogflow CX | 44 entradas | privado | ✅ |
 | `kb_plat_adk` | Técnica de cribado local con ADK | 45 entradas | privado | ✅ |
 | `kb_sys_core` | Arquitectura del sistema | 23 entradas | privado | ✅ |
 | `kb_proj_petal` | Conocimiento del proyecto Petal | 25 entradas | privado | ✅ |
 | Política de escritura | Norma editorial común de los KBs | 14 reglas | privado | ✅ |
 
-**Total: ~187 entradas de conocimiento curado**, gobernadas por un proceso propio (nomenclatura por capas, metadatos de trazabilidad y versionado, validación automática de consistencia).
+**Total: ~199 entradas de conocimiento curado**, gobernadas por un proceso propio (nomenclatura por capas, metadatos de trazabilidad y versionado, validación automática de consistencia).
 
 ---
 
