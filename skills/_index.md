@@ -45,6 +45,14 @@ Cuando el sistema QAP madure y tenga repo propio, migrarán a `~/CD/skills/`.
 | 10 | **qap_ag_juez** | Evalúa respuesta real vs rúbrica — veredicto por criterio (sí/no/parcial) con evidencia | QAP | Skill | Claude API | 🔴 |
 | 10 | scorer | Agrega veredictos del juez → PASS / PARTIAL / FAIL + % numérico | — | **Infra** | — | 🔴 |
 
+### ACT — Migración Petal 1.0 → 1.1
+
+| Skill | Función | Línea | Tipo | Modelo | Estado |
+|---|---|---|---|---|---|
+| **act_plat_cx_tone_refactor** | Refactoriza el sistema de tono (VOZ/TONO/REGISTRO/ESTADO) — renombra $modo_tono→$registro, añade $es_urgente, actualiza playbooks y examples | ACT | Skill | Sonnet 4.6 | 🟡 |
+
+---
+
 ### Fase 1 — QA heredado de ACT (en repo cx-automation-template)
 
 | Skill | Ruta actual | Función | Estado |
