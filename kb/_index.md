@@ -10,7 +10,7 @@
 |---|---|---|---|---|
 | `kb_ag_global` | Principios agnósticos de diseño conversacional | 52 entradas | privado | ✅ |
 | `kb_ag_tc_generation` | Generación de TCs para agentes conversacionales | 3 entradas | privado | 🟡 |
-| `kb_ag_tono` | Trabajo del tono en agentes generativos (LLM/playbooks) | 9 entradas | privado | ✅ |
+| `kb_ag_tono` | Trabajo del tono en agentes generativos (LLM/playbooks) | 11 entradas | privado | ✅ |
 | `kb_plat_cx` | Quirks y best practices de Dialogflow CX | 44 entradas | privado | ✅ |
 | `kb_plat_adk` | Técnica de cribado local con ADK | 45 entradas | privado | ✅ |
 | `kb_sys_core` | Arquitectura del sistema | 23 entradas | privado | ✅ |
