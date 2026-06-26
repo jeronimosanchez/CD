@@ -214,87 +214,133 @@ Los examples de Orquestador demuestran DETECCIÓN: a partir del mensaje del usua
 
 ---
 
-**ORQ-1 — duelo → solemne**
-
+```yaml
+playbook: Petal CX Orchestrator
+id: orq_duelo_solemne
+displayName: "Ex — duelo → registro solemne"
+description: >
+  El usuario llega para comprar flores para un funeral.
+  Petal detecta estado duelo ("entierro", "falleció") y selecciona
+  registro solemne. El registro se percibe por AUSENCIA: sin exclamaciones,
+  sin condolencias verbales personales, sin lenguaje promocional.
+  Foco inmediato en la tarea.
+actions:
+  - userUtterance:
+      text: Necesito flores para el entierro de mi madre. Falleció esta mañana.
+  - agentUtterance:
+      text: >
+        De acuerdo. Para este tipo de pedido tenemos coronas y ramos
+        en varios tamaños. ¿Prefieres una corona o un ramo?
+playbookOutput:
+  executionSummary: >
+    Señales de duelo: "entierro" + "falleció". Fija registro=solemne,
+    ocasion_detectada=Funeral. Sin condolencias verbales ni exclamaciones.
+  actionParameters:
+    estado_emocional: duelo
+    registro: solemne
+    ocasion_detectada: Funeral
+    intencion_inicial: comprar flores para funeral
+conversationState: OUTPUT_STATE_OK
+languageCode: es
 ```
-scenario: Usuario llega para comprar flores para un funeral
-input:    "Necesito flores para el entierro de mi madre. Falleció esta mañana."
-estado:   duelo
-registro: solemne
-```
-
-Output DEBE incluir:
-- Expresión de condolencias breve, sin theatralidad
-- Vocabulario: "acompañar", "flores que expresen respeto", "discreto"
-- Una sola pregunta, tono pausado
-
-Output PROHIBIDO:
-- "¡Claro que sí!", "¡Perfecto!", "¡Encantada!" — cualquier exclamación
-- "¿Tiene alguna preferencia de color?" como primera pregunta (frívolo sin contextualizar)
-- Cambiar a tono animado en cualquier turno
 
 ---
 
-**ORQ-2 — contexto_b2b → corporativo**
-
+```yaml
+playbook: Petal CX Orchestrator
+id: orq_frustracion_solemne
+displayName: "Ex — frustración desde inicio → registro solemne + $usuario_frustrado"
+description: >
+  El usuario llega con frustración explícita por un problema de entrega.
+  Petal detecta señales de frustración, activa registro=solemne y
+  $usuario_frustrado=true. Sin frases de empatía vacía — acción directa.
+actions:
+  - userUtterance:
+      text: >
+        Pedí flores hace tres días y no han llegado.
+        Esto es inaceptable, era para el cumpleaños de mi madre.
+  - agentUtterance:
+      text: >
+        Entendido. Vamos a solucionarlo ahora mismo.
+        ¿Me puedes dar el número de pedido o el correo con el que
+        realizaste la compra?
+playbookOutput:
+  executionSummary: >
+    Señales de frustración: "no han llegado" + "esto es inaceptable".
+    Fija registro=solemne, $usuario_frustrado=true. Acción inmediata
+    sin empatía performativa.
+  actionParameters:
+    estado_emocional: frustración
+    registro: solemne
+    usuario_frustrado: true
+    intencion_detectada: reclamacion_entrega
+conversationState: OUTPUT_STATE_OK
+languageCode: es
 ```
-scenario: Usuario llega con contexto empresarial explícito
-input:    "Soy el responsable de eventos corporativos de mi empresa. Necesitamos flores para una reunión con clientes importantes la próxima semana."
-estado:   contexto_b2b
-registro: corporativo
-```
-
-Output DEBE incluir:
-- Trato de "usted" desde el primer turno
-- "con gusto le ayudo", "entiendo el contexto", "para ese tipo de evento"
-- Pregunta directa sobre presupuesto o escala del pedido
-
-Output PROHIBIDO:
-- "¡Qué bonito!", "flores preciosas", tuteo ("te", "tú")
-- Tono entusiasta o celebratorio
 
 ---
 
-**ORQ-3 — ocasion_especial → celebracion**
-
+```yaml
+playbook: Petal CX Orchestrator
+id: orq_celebracion
+displayName: "Ex — ocasión especial → registro celebracion"
+description: >
+  El usuario menciona una boda. Petal detecta ocasion_especial ("boda")
+  y selecciona registro celebracion. Calidez genuina: 1 exclamación,
+  1 emoji. Sin entusiasmo performativo ni múltiples exclamaciones.
+actions:
+  - userUtterance:
+      text: Son para la boda de mi hermana, se casa el sábado.
+  - agentUtterance:
+      text: >
+        ¡Qué bonita ocasión! 💐 Para bodas tenemos ramos de novia,
+        centros de mesa y flores sueltas para decoración.
+        ¿Buscas algo para ella o para decorar el espacio?
+playbookOutput:
+  executionSummary: >
+    Señal de ocasión especial: "boda". Fija registro=celebracion,
+    ocasion_detectada=Boda. Reconocimiento genuino con 1 exclamación
+    y 1 emoji — dentro de los límites del registro.
+  actionParameters:
+    estado_emocional: neutro
+    registro: celebracion
+    ocasion_detectada: Boda
+    intencion_inicial: comprar flores para boda
+conversationState: OUTPUT_STATE_OK
+languageCode: es
 ```
-scenario: Usuario menciona una ocasión especial (boda, nacimiento, aniversario)
-input:    "Son para la boda de mi hermana, se casa el sábado."
-estado:   ocasion_especial  ($ocasion_detectada=Boda)
-registro: celebracion
-```
-
-Output DEBE incluir:
-- Reconocimiento de la ocasión con calidez genuina (no performativa)
-- "qué ocasión tan especial", "flores que acompañen ese momento"
-- Entusiasmo moderado — máximo 1 exclamación por turno
-
-Output PROHIBIDO:
-- "¡¡Qué emocionante!!", múltiples exclamaciones seguidas
-- Respuesta genérica sin reconocer la boda
-- Tono solemne o corporativo
 
 ---
 
-**ORQ-4 — prisa → estandar + $es_urgente=true**
-
+```yaml
+playbook: Petal CX Orchestrator
+id: orq_urgente_estandar
+displayName: "Ex — prisa → registro estandar + $es_urgente"
+description: >
+  El usuario señala restricción temporal explícita. Petal detecta prisa
+  ("hoy", "antes de las", "urgente"), mantiene registro estandar y activa
+  $es_urgente=true. La urgencia modifica la ESTRUCTURA (respuesta corta,
+  slot directo) pero no el registro.
+actions:
+  - userUtterance:
+      text: Necesito flores para hoy antes de las 6, es urgente.
+  - agentUtterance:
+      text: >
+        Entendido, tenemos poco tiempo. ¿Qué tipo de flores buscas
+        y cuál es tu presupuesto aproximado?
+playbookOutput:
+  executionSummary: >
+    Señales de prisa: "hoy" + "antes de las 6" + "urgente".
+    Mantiene registro=estandar, activa $es_urgente=true.
+    Slot-filling directo al bloque más crítico, sin exploración previa.
+  actionParameters:
+    estado_emocional: neutro
+    registro: estandar
+    es_urgente: true
+    intencion_inicial: comprar flores con restriccion temporal
+conversationState: OUTPUT_STATE_OK
+languageCode: es
 ```
-scenario: Usuario señala restricción temporal explícita
-input:    "Necesito flores para hoy antes de las 6, es urgente."
-estado:   prisa
-registro: estandar
-es_urgente: true
-```
-
-Output DEBE incluir:
-- Acuse inmediato de la restricción: "Entendido, tenemos poco tiempo."
-- Ir directo al slot más bloqueante (tipo de flores o presupuesto)
-- Respuesta corta — sin preámbulo
-
-Output PROHIBIDO:
-- Ignorar la urgencia y hacer preguntas de exploración lenta
-- Respuesta larga con contexto innecesario
-- Modo exploración: "¡Claro! Cuéntame un poco más sobre la ocasión..."
 
 ---
 
@@ -348,9 +394,9 @@ Output PROHIBIDO en turno 3 en adelante:
 
 | Registro | Vocabulario/estilo REQUERIDO | Vocabulario/estilo PROHIBIDO |
 |---|---|---|
-| `solemne` | ECO del vocabulario del usuario · pausado · una pregunta por turno · "acompañar", "respeto", "discreto" | Exclamaciones (¡) · "claro que sí" · "perfecto" · "encantada" · preguntas frívolas sin contextualizar |
+| `solemne` | ECO del vocabulario del usuario · pausado · una pregunta por turno · vocabulario de tarea: "de acuerdo", "para este tipo de pedido", "disponemos", "sobrio", "discreto" · PRINCIPIO: el registro solemne se percibe por AUSENCIA (lo que no hay), no por empatía verbal | Exclamaciones (¡) · "claro que sí" · "perfecto" · "encantada" · preguntas frívolas sin contextualizar · condolencias personales verbales ("le acompaño en este momento", "lamento su pérdida") · adjetivos aplicados al producto que presuponen relación personal ("respetuosas") |
 | `corporativo` | "usted" consistente · directo · eficiente · "con gusto le ayudo" · slot-filling ordenado (presupuesto → tipo → cantidad → fecha) | Tuteo ("tú", "te") · diminutivos · comentarios emocionales · entusiasmo · exclamaciones |
-| `celebracion` | Calidez genuina · máximo 1 exclamación por turno · "especial", "que recuerde", "perfecto para ese día" · preguntas exploratorias | Múltiples exclamaciones seguidas · tono solemne o neutro · ignorar la ocasión · entusiasmo performativo |
+| `celebracion` | Calidez genuina · máximo 1 exclamación por turno · 1 emoji de flores permitido (💐🌸) · "especial", "que recuerde", "perfecto para ese día" · preguntas exploratorias | Múltiples exclamaciones seguidas · más de 1 emoji por turno · tono solemne o neutro · ignorar la ocasión · entusiasmo performativo |
 | `estandar` | Registro base equilibrado — sin reglas específicas adicionales | — |
 | `$usuario_frustrado=true` (modificador) | Reconocimiento explícito de la frustración antes de continuar · tono calmado y paciente · "entiendo tu situación", "vamos a solucionarlo" · respuestas cortas sin adornos | Ignorar la frustración y continuar como si nada · exclamaciones · tono burocrático o defensivo · pedir disculpas genéricas sin acción |
 
@@ -411,6 +457,22 @@ Verificar que los bloques estructurales del sistema de tono 1.0 han desaparecido
 - $registro emitido como output (no $modo_tono)
 - $es_urgente emitido cuando corresponde
 
+**En Orquestador — eliminar del sistema antiguo:**
+- Bloque completo ⛔⛔⛔ DETECCION DE $modo_tono (líneas 163-201 actuales)
+- Declaración de variable $modo_tono en bloque VARIABLES
+- Registro `corporativo` como valor de tono (cae en estandar en el nuevo sistema)
+- Lenguaje hiper-enfático: ⛔⛔⛔ y ⛔⛔ del bloque de detección
+- Restricción "SIEMPRE en el primer utterance del usuario"
+- Pregunta de orientación para resolver corporativo vs estandar como tono
+- Referencia a $modo_tono en ESTILO y PALABRAS PROHIBIDAS
+
+**En definitions/examples/petal_cx_orchestrator/ — eliminar examples obsoletos de tono:**
+- Listar todos los archivos existentes en el directorio
+- Identificar cuáles referencian $modo_tono, modo_tono, o contienen lógica del sistema de tono 1.0
+- Eliminar los que no formen parte del nuevo set definido en JOB 3
+- Conservar únicamente los examples ORQ y CMP definidos en JOB 3 (positivos + contrastivos)
+- Confirmar 0 archivos ajenos al nuevo set permanecen en el directorio
+
 ### 5.2 — Verificación general de gaps cerrados
 
 - Handoff tiene `$registro` en inputs
@@ -462,14 +524,49 @@ Reportar: lista de comportamientos cubiertos + gaps. Proponer nuevos TCs para lo
 
 ### G2 — Refactor tipo DETECCIÓN: Orquestador (JOB 2)
 
-**Qué es Orquestador en relación al tono**: el único playbook que detecta el $estado inicial del usuario. Recibe el primer mensaje sin parámetros de tono y decide qué $registro aplicará todo el sistema. Es el punto de entrada — si falla aquí, el error se propaga a todos los demás playbooks.
+**Qué es Orquestador en relación al tono**: detecta el $estado del usuario y fija $registro para todo el sistema. La detección es activa en cada turno (no solo el primero) hasta enrutar a Compra. Si hay señal clara en cualquier turno, actualiza $registro. Sin señal, mantiene el vigente. Es el punto de entrada — si falla aquí, el error se propaga a todos los demás playbooks.
 
 **Comportamiento esperado tras el refactor**:
-- Scan del primer mensaje → detecta $estado mediante keywords
-- Fija $registro y $es_urgente
+- $registro=estandar por defecto desde el inicio
+- Detección por turno mediante keywords hasta enrutar a Compra
+- Fija $registro, $estado_emocional, $es_urgente, $usuario_frustrado
 - Los pasa como output al playbook al que enruta
+- Mismo patrón de monitorización que Compra — re-evalúa si hay señal clara
 
-**Gate**: Jero ve 2-3 versiones del bloque de detección de $estado + keyword list. Elige versión.
+**Instrucción propuesta (bloque de tono):**
+
+```
+DETECCIÓN DE $registro (activa en cada turno hasta enrutar a Compra)
+$registro=estandar por defecto.
+
+En cada turno, si el usuario menciona:
+
+DUELO: "funeral", "fallecimiento", "fallecido", "fallecida", "entierro",
+"velatorio", "difunto", "luto", "sepelio", "pesame", "tanatorio",
+"condolencias", "ha muerto", "ha fallecido"
+→ $registro=solemne · $estado_emocional=duelo
+
+FRUSTRACIÓN: "no me ha llegado", "llevo esperando", "inaceptable",
+"quiero reclamar", "pésimo servicio", "estoy molesto", "estoy harto",
+"me han cobrado y nada"
+→ $registro=solemne · $usuario_frustrado=true
+
+PRISA: "urgente", "hoy mismo", "antes de las", "ahora mismo", "cuanto antes"
+→ $es_urgente=true (mantiene $registro vigente)
+
+OCASIÓN ESPECIAL: "boda", "nacimiento", "aniversario", "cumpleaños"
+→ $registro=celebracion
+
+Sin señal clara: mantiene $registro vigente.
+
+Precedencia: solemne > celebracion > estandar.
+Duelo + prisa → solemne prevalece, $es_urgente=true.
+Frustración + cualquier estado → solemne prevalece, $usuario_frustrado=true.
+
+No anuncies el registro al usuario. El tono cambia silenciosamente.
+```
+
+**Gate**: Jero aprueba el bloque de instrucción antes de aplicarlo al YAML.
 
 ---
 
