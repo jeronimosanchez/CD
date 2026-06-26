@@ -80,6 +80,7 @@ Variable `$estado`. Perspectiva del usuario:
 | Estado detectado | Registro seleccionado | Nota |
 |---|---|---|
 | `duelo` | `solemne` | — |
+| `frustración` | `estandar` + `$usuario_frustrado=true` | Modificador — no cambia el registro vigente. Puede llegar desde el inicio de sesión (mal envío, experiencia previa negativa) |
 | `contexto_b2b` | `corporativo` | — |
 | `ocasion_especial` | `celebracion` | Boda, nacimiento, aniversario |
 | `prisa` | `estandar` + `$es_urgente=true` | Urgencia como modificador |
@@ -88,6 +89,8 @@ Variable `$estado`. Perspectiva del usuario:
 **Múltiples estados simultáneos:**
 - `duelo + prisa` → `solemne` prevalece, `$es_urgente=true`
 - `b2b + prisa` → `corporativo` prevalece, `$es_urgente=true`
+- `cualquier registro + frustración` → registro prevalece, `$usuario_frustrado=true`
+- `duelo + frustración` → `solemne` prevalece, `$usuario_frustrado=true` (doble empatía — máxima calma)
 
 **Distinción clave:** ESTADO = perspectiva del usuario (cómo llega). REGISTRO = perspectiva del agente (qué selecciona Petal). Nombres distintos por diseño.
 
@@ -105,6 +108,10 @@ Este rename es el cambio más transversal — afecta todos los playbooks, exampl
 ### $es_urgente (nueva)
 Boolean. `true` cuando `$estado=prisa` o cuando se detecta restricción temporal explícita.
 Default: `false`.
+
+### $usuario_frustrado (nueva)
+Boolean. `true` cuando se detecta frustración en el usuario — al inicio o mid-conversación.
+Default: `false`. No cambia el `$registro` vigente — modifica el comportamiento dentro del registro.
 
 ---
 
@@ -345,6 +352,7 @@ Output PROHIBIDO en turno 3 en adelante:
 | `corporativo` | "usted" consistente · directo · eficiente · "con gusto le ayudo" · slot-filling ordenado (presupuesto → tipo → cantidad → fecha) | Tuteo ("tú", "te") · diminutivos · comentarios emocionales · entusiasmo · exclamaciones |
 | `celebracion` | Calidez genuina · máximo 1 exclamación por turno · "especial", "que recuerde", "perfecto para ese día" · preguntas exploratorias | Múltiples exclamaciones seguidas · tono solemne o neutro · ignorar la ocasión · entusiasmo performativo |
 | `estandar` | Registro base equilibrado — sin reglas específicas adicionales | — |
+| `$usuario_frustrado=true` (modificador) | Reconocimiento explícito de la frustración antes de continuar · tono calmado y paciente · "entiendo tu situación", "vamos a solucionarlo" · respuestas cortas sin adornos | Ignorar la frustración y continuar como si nada · exclamaciones · tono burocrático o defensivo · pedir disculpas genéricas sin acción |
 
 ---
 
@@ -355,6 +363,8 @@ Output PROHIBIDO en turno 3 en adelante:
 
 ```
 DUELO:          "fallecido", "entierro", "funeral", "pérdida", "falleció", "velatorio"
+FRUSTRACIÓN:    "estoy molesto/a", "estoy harto/a", "llevo esperando", "no me ha llegado",
+                "me han cobrado y nada", "esto es inaceptable", "quiero reclamar", "pésimo servicio"
 CONTEXTO_B2B:   "empresa", "cliente", "reunión de trabajo", "evento corporativo", "directivos"
 OCASION_ESPECIAL: via $ocasion_detectada ∈ {Boda, Nacimiento, Romantico, Aniversario}
                   (ya detectado por Orquestador — no requiere keyword manual)
