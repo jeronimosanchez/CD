@@ -132,6 +132,47 @@ Default: `false`. No cambia el `$registro` vigente — modifica el comportamient
 
 ---
 
+## JOB 0 — VALIDACIÓN DE PARIDAD (ejecutar antes que cualquier otro JOB)
+
+Comprueba que el estado de Agent 1.1 en CX coincide con `definitions/` local.
+Si hay divergencias, para y espera OK explícito antes de continuar.
+
+### Procedimiento
+
+Por cada uno de los 12 recursos, en orden, uno a uno:
+
+1. Lee el recurso de Agent 1.1 vía API CX (GET) → guarda en `/tmp/cx_snapshot/<recurso>/`
+2. Compara contra `definitions/<recurso>/` campo a campo
+3. Reporta resultado antes de pasar al siguiente
+
+Orden de ejecución:
+1. `agent_config`
+2. `playbooks`
+3. `examples`
+4. `tools`
+5. `flows`
+6. `pages`
+7. `intents`
+8. `entity_types`
+9. `webhooks`
+10. `generators`
+11. `environments`
+12. `versions`
+
+### Output por recurso
+
+- ✅ idéntico — continúa al siguiente
+- ⚠️ diverge — muestra qué campos difieren y espera OK explícito antes de continuar
+- ❌ existe en uno pero no en el otro — muestra cuál y espera OK explícito
+
+### Regla
+
+No se modifica nada en `definitions/` ni en CX durante este JOB.
+Es lectura pura. Si Jero da OK en una divergencia, se documenta y continúa.
+Si no da OK, se para completamente.
+
+---
+
 ## JOB 1 — AUDITORÍA (ejecutar siempre primero)
 
 Antes de cualquier rename o edición, la skill ejecuta 3 pasadas de búsqueda.
@@ -581,6 +622,88 @@ No anuncies el registro al usuario. El tono cambia silenciosamente.
 - Usar vocabulario del usuario cuando aplica (ECO)
 - Keyword watch por turno → si hit → re-evaluar → cambiar si corresponde
 - Pasar $registro actualizado a Checkout
+
+---
+
+#### DISEÑO 30-jun — GATEADO vs PROPUESTO (NO es "cerrado")
+
+> Compra NO se editó esta sesión. Refactor grande y todo-o-nada (un Compra a medias queda roto e incommiteable). La aplicación va en pasada dedicada.
+>
+> **Esta sección distingue lo que Jero APROBÓ de lo que Claude PROPUSO sin gate.** Todo lo PROPUESTO se presenta 1-a-1 a Jero en la sesión dedicada — cada borrado/sustitución/colapso es su propio gate. Ver [[feedback_decisiones_arquitectonicas_son_gate]].
+
+---
+
+##### ✅ GATEADO POR JERO (aprobado esta sesión)
+
+1. `corporativo` eliminado de Compra (cae en `estandar`). Compra recibe solo `solemne`/`celebracion`/`estandar`.
+2. Fallback enlatado por tono (línea 731, `fallback_<modo>_<presupuesto>`) **eliminado** — el tono se aplica generativamente, no con frases por modo. `$presupuesto_duro` (R4) **se mantiene** (es lógica de compra, no tono).
+3. Desambiguación "rosa" (434-447) **fuera de scope** — es parseo, no tono. No se toca.
+4. Conectores ECO (línea 198): quitar `corporativo`, dejar `estandar`/`solemne`, añadir `celebracion`.
+5. Frustración: frases enlatadas por modo → genéricas. Frustración debe funcionar sola.
+6. Templates items 1-4 (revisados 1-a-1) → colapsar a regla:
+   - 1 (552) confirmación → regla DESAMBIGUAR ELECCIÓN
+   - 2 (579-581) stock<cantidad → colapsar, preservar excepción "sí mostrar nº stock aquí"
+   - 3 (602-605) multi reconoce ambos → colapsar
+   - 4 (617-621) multi ECO resumen → colapsar + **CORREGIR** (estaba incompleto: 1 producto sin total; regla nueva = listar TODOS + TOTAL)
+7. **Sub-bloque CONFIRMACIÓN Y TRANSFERENCIA** — va en `# FLUJO PRINCIPAL` (~línea 588), NO en `# TONO` (es flujo). Contenido aprobado:
+   ```
+   CONFIRMACIÓN Y TRANSFERENCIA A CHECKOUT
+   1. DESAMBIGUAR ELECCIÓN (solo si ambigua): si la referencia apunta a 1
+      solo producto → captura directo. Si encaja con varios (mismo
+      precio/tamaño) → confirma cuál antes de capturar. Aplica # TONO.
+   2. UN SOLO producto → TRANSFIERE SILENCIOSO a Checkout. NO hay resumen
+      en Compra (ya mostraste la lista y el usuario eligió).
+   3. DOS O MÁS productos → ECO RESUMEN: lista todos + TOTAL, pide
+      confirmación, no transfieras sin ella. Aplica # TONO.
+   4. Validación final del pedido → en Checkout.
+   ```
+   Guardarraíl aprobado: contraste "UN SOLO/DOS O MÁS" blinda el silencioso.
+8. **Examples por MOMENTO** (confirmar elección / validar compra), no por nº de productos. Lean — construir solo si un TC falla. Multi-producto+total = candidato nº1 (ver [[pendiente_example_multiproducto_total]]).
+9. **Método**: las muestras situacionales se revisan 1-a-1, cada una su gate. No "adelgazar en bloque".
+
+---
+
+##### ⏳ PROPUESTO — PENDIENTE DE GATE (Claude lo propuso, Jero NO lo ha aprobado)
+
+> Presentar cada punto 1-a-1 en la sesión dedicada. No aplicar nada de aquí sin OK explícito.
+
+- **Borrar `CHECK-IN DE TONO`** (217-231) — gate pendiente.
+- **Borrar `CONFIRMACION IMPLICITA`** (233-239) — gate pendiente.
+- **Adelgazar `MODOS DE TONO v3`** (248-385): NO se borra (referenciado desde ~10 puntos: 464, 472, 480, 520, 558, 563, 564, 635, 637, 734). Propuesta: cada situación 3 variantes por modo → 1 muestra neutra, conservando el nombre, `# TONO` la entona → catálogo `MUESTRAS SITUACIONALES`. **~11 situaciones a revisar 1-a-1** (colapsar/mantener/quitar): contexto emocional, primer turno, no sabe que elegir, refinamiento, alternativas tras rechazo, cambia tipo/filtro, expansion de contexto, APERTURA tras mostrar, sugerir tipos, confirmacion de tamano, sin stock en color.
+- **Templates items 5-8 (no revisados 1-a-1)**: 5 (672-674) delegación · 6 (708-711) sin resultados · 7 (749-751) frustración reconocimiento · 8 (754-756) frustración escalación.
+- **Texto exacto del bloque `# TONO`** (concepto de unificación gateado; el texto literal NO). Borrador propuesto:
+  ```
+  # TONO
+  Continuidad del tratamiento iniciado en el Orquestador.
+  Compra RECIBE $registro, $es_urgente, $usuario_frustrado. No detecta el
+  registro inicial — lo APLICA y VIGILA cambios. En toda transferencia a
+  Checkout o Handoff pasa $registro, $es_urgente, $usuario_frustrado.
+
+  APLICACIÓN (cada turno):
+  Aplica el $registro vigente. Una pregunta por turno. Tutea siempre.
+  2-4 líneas máximo (salvo solemne: no acortar).
+
+  Anti-reglas y conectores por registro:
+  - solemne: sin exclamaciones, sin emoji 🌸, sin 'genial'/'perfecto!'/
+    'que te parece?'/'Lamento tu perdida'. Pausado.
+    Conectores: 'de acuerdo', 'entendido', 'muy bien'.
+  - celebracion: máx. 1 exclamación y 1 emoji 🌸 por turno. Calidez genuina.
+    Conectores: 'perfecto', 'qué bonito', 'genial'.
+  - estandar: natural, fresco. 'Mira,', 'genial', emoji 🌸 ocasional.
+    Conectores: 'claro', 'vale', 'mira', 'entonces', 'bueno'.
+
+  VIGILANCIA DE CAMBIO (por turno):
+  - DUELO ('funeral','fallecimiento','tanatorio','ha muerto','difunto',
+    'entierro','velatorio') → $registro=solemne
+  - FRUSTRACIÓN ('no funciona','un desastre','esto no va','no me entiendes')
+    → $registro=solemne · $usuario_frustrado=true
+  Actualiza silenciosamente y pasa el $registro actualizado a Checkout.
+  No anuncies el cambio.
+  ```
+- **Checkout afectado**: observación de Claude (mismo patrón enlatado, 193-195, con corporativo), NO decisión de Jero. Decidir si entra en este refactor o va aparte.
+- **Cambios mecánicos** (parte de JOB 4, ya gated como rename global): param defs (70, 136), transfers (591, 623, 758, 762, 763), refs sueltas (189, 220-239, 394, 458, 469, 475, 731, 734, 746, 771, 810).
+
+---
 
 **Gate**: Jero ve 2-3 versiones del bloque de aplicación + keyword watch. Elige versión.
 
